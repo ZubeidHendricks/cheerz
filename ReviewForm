@@ -1,0 +1,62 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+
+const ReviewForm = ({ productId }) => {
+    const [userName, setUserName] = useState('');
+    const [rating, setRating] = useState(5);
+    const [reviewText, setReviewText] = useState('');
+    const [photo, setPhoto] = useState(null);
+    const [video, setVideo] = useState(null);
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const formData = new FormData();
+        formData.append('productId', productId);
+        formData.append('userName', userName);
+        formData.append('rating', rating);
+        formData.append('reviewText', reviewText);
+        if (photo) formData.append('photo', photo);
+        if (video) formData.append('video', video);
+
+        try {
+            await axios.post('/api/reviews', formData);
+            alert('Review submitted!');
+        } catch (error) {
+            console.error('There was an error submitting your review:', error);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <div>
+                <label>User Name:</label>
+                <input type="text" value={userName} onChange={(e) => setUserName(e.target.value)} required />
+            </div>
+            <div>
+                <label>Rating:</label>
+                <select value={rating} onChange={(e) => setRating(e.target.value)}>
+                    <option value={5}>5 Stars</option>
+                    <option value={4}>4 Stars</option>
+                    <option value={3}>3 Stars</option>
+                    <option value={2}>2 Stars</option>
+                    <option value={1}>1 Star</option>
+                </select>
+            </div>
+            <div>
+                <label>Review:</label>
+                <textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)} required></textarea>
+            </div>
+            <div>
+                <label>Photo:</label>
+                <input type="file" onChange={(e) => setPhoto(e.target.files[0])} />
+            </div>
+            <div>
+                <label>Video:</label>
+                <input type="file" onChange={(e) => setVideo(e.target.files[0])} />
+            </div>
+            <button type="submit">Submit Review</button>
+        </form>
+    );
+};
+
+export default ReviewForm;
